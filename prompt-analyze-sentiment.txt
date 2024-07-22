@@ -1,0 +1,9 @@
+provide sentiment analysis on the following comment. the analysis result should be negative, conservative, positive, optimistic:
+
+=====
+
+"Tesla CEO Elon Musk Eyes $25 Trillion Market Cap With Optimus Bot, Admits To Being 'Pathologically Optimistic'".
+
+=====
+
+when you are done, reply TERMINATE
