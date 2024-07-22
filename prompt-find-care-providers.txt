@@ -1,0 +1,2 @@
+I have a health insurance account with me as the primary policy holder (name linkai yu). I would like to find out the benefits of my policy. 
+Find primary care physician near Boston, MA, save it to a file c:\\temp\\output-careproviders.txt.
