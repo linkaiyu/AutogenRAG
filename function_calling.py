@@ -153,47 +153,53 @@ openai = AzureOpenAI(
 # this uses chat completion function calling feature
 def call_OpenAI_using_chat_completion(messages, tools, available_functions):
     # Step 1: send the prompt and available functions to GPT
-    response = openai.chat.completions.create (
-        model="gpt-4",
-        messages=messages,
-        tools=tools,
-        tool_choice="auto",
-    )
+    
+    while True:
+        response = openai.chat.completions.create (
+            model="gpt-4",
+            messages=messages,
+            tools=tools,
+            tool_choice="auto",
+        )
 
-    response_message = response.choices[0].message
-    messages.append(response_message)
+        response_message = response.choices[0].message
+        messages.append(response_message)
 
-    # handle function call
-    # code ref: https://learn.microsoft.com/en-us/azure/ai-services/openai/how-to/function-calling
+        # handle function call
+        # code ref: https://learn.microsoft.com/en-us/azure/ai-services/openai/how-to/function-calling
 
-    if response_message.tool_calls:
-        for tool_call in response_message.tool_calls:
-            print(f"Recommended Function call: {tool_call}")
-            print()
+        if not response_message.tool_calls:
+            break
+        else:
+            for tool_call in response_message.tool_calls:
+                print(f"Recommended Function call: {tool_call}")
+                print()
 
-            # call the function
-            # Note: the JSON response may not always be valid; be sure to handle errors
-            function_name = tool_call.function.name
+                # call the function
+                # Note: the JSON response may not always be valid; be sure to handle errors
+                function_name = tool_call.function.name
 
-            # verify function exists
-            if function_name not in available_functions:
-                return "Function " + function_name + " does not exist"
-            function_to_call = available_functions[function_name]
+                # verify function exists
+                if function_name not in available_functions:
+                    return "Function " + function_name + " does not exist"
+                function_to_call = available_functions[function_name]
 
-            # verify function has correct number of arguments
-            function_args = json.loads(tool_call.function.arguments)
-            if check_args(function_to_call, function_args) is False:
-                return "Invalid number of arguments for function: " + function_name
-            # call the function
-            function_response = function_to_call(**function_args)
-            print(f"Output of function call: {function_response}")
-            print()
-            messages.append({
-                    "tool_call_id": tool_call.id,
-                    "role": "tool",
-                    "name": function_name,
-                    "content": function_response,
-                })
+                # verify function has correct number of arguments
+                function_args = json.loads(tool_call.function.arguments)
+                if check_args(function_to_call, function_args) is False:
+                    return "Invalid number of arguments for function: " + function_name
+                # call the function
+                function_response = function_to_call(**function_args)
+                print(f"Output of function call: {function_response}")
+                print()
+                messages.append({
+                        "tool_call_id": tool_call.id,
+                        "role": "tool",
+                        "name": function_name,
+                        "content": function_response,
+                    })
+                
+    return response.choices[0].message.content
 
 import time        
 
@@ -303,6 +309,6 @@ def call_OpenAI_using_assistant_function_calling(user_message, system_messages, 
 
 
 if __name__ == "__main__":
-    # call_OpenAI_using_chat_completion(messages, tools, function_map)
-    call_OpenAI_using_assistant_function_calling(user_message, assistant_system_message, tools, function_map)
+    call_OpenAI_using_chat_completion(messages, tools, function_map)
+    # call_OpenAI_using_assistant_function_calling(user_message, assistant_system_message, tools, function_map)
     print("done")
