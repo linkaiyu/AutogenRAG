@@ -109,7 +109,7 @@ def get_policy_benefits(policy: Annotated[str,"policy number"]) -> Annotated[str
         str: the details of the policy benefits
     """
     print(f"get_policy_benefits({policy})")
-    return read_file('documents/Northwind_Standard_Benefits_Details.pdf')
+    return read_file('Northwind_Standard_Benefits_Details.pdf')
 
 @desc("summarize the policy content.")
 def summarize_policy_content(content_file_path: Annotated[str,"path to policy content file"]) -> Annotated[str,"summary of the policy content"]:
